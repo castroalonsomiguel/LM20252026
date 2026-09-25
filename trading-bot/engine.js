@@ -28,7 +28,8 @@
     maxTradesPerDay: Infinity, // sin límite diario: entra en todo lo que pase los filtros
     maxOpen: Infinity,         // sin límite de posiciones (una por moneda y sin superar el capital)
     maxExposure: 1.0,          // la suma de posiciones abiertas no supera el 100 % del capital
-    regimeMinN: 30,            // casos parecidos mínimos para el «Criterio Claude»
+    regimeMinN: 30,
+    maxLossPct: 0.25,          // límite de pérdida: 25 % del capital inicial            // casos parecidos mínimos para el «Criterio Claude»
     minWin: 0.75,             // probabilidad mínima de ganar exigida
     feePct: 0.001,            // comisión por lado (Binance spot)
     slipPct: 0.0005,          // deslizamiento estimado por lado
@@ -612,6 +613,28 @@
         if (k.length) { s.prices[t.sym] = k[k.length - 1].c; t.checkedT = now; }
         if (exit !== null) this.close(t, exit, reason, exitT);
       }
+      this.checkLossLimit();
+    }
+
+    // Límite de pérdida: si una operación pierde más del 25 % del capital inicial, se cierra.
+    // Si la pérdida total de la cuenta (cerradas + abiertas) llega al 25 %, se cierra todo
+    // y el bot deja de abrir operaciones hasta que se reinicie.
+    checkLossLimit() {
+      const s = this.state;
+      const limit = CONFIG.startCapital * CONFIG.maxLossPct;
+      for (const t of [...s.open]) {
+        const p = s.prices[t.sym];
+        if (p && t.notional * (1 - p / t.entry) >= limit) {
+          this.close(t, p, 'límite de pérdida (25 % del capital)', Date.now());
+        }
+      }
+      if (!s.halted && CONFIG.startCapital - this.equity() >= limit) {
+        for (const t of [...s.open]) this.close(t, s.prices[t.sym] || t.entry, 'límite de pérdida de la cuenta (25 %)', Date.now());
+        s.halted = true;
+        s.running = false;
+        this.log(`STOP DE CUENTA: la pérdida total llegó al 25 % del capital inicial (${limit.toFixed(0)} USDT). Se cierra todo y el bot deja de operar. Pulsa «Reiniciar» para empezar de nuevo.`, 'bad');
+        this.lesson(`La cuenta perdió el 25 % del capital y se detuvo. Revisa qué patrones causaron las pérdidas en «Fracasadas» antes de volver a empezar.`, 'bad');
+      }
     }
 
     close(t, exitPrice, reason, exitT) {
@@ -683,8 +706,10 @@
       try {
         if (Date.now() - this.state.lastResearch > CONFIG.researchEveryH * 3600e3) await this.research(progress);
         await this.updateOpen();
-        await this.scan();
-        await this.regimeScan();
+        if (!this.state.halted) {
+          await this.scan();
+          await this.regimeScan();
+        }
       } catch (e) {
         this.log(`Error: ${e.message}`, 'bad');
       } finally {

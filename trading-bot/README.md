@@ -24,7 +24,8 @@ Guarda todo en `estado.json`. Puedes cargar ese archivo en el panel con **Import
 3. **Backtest con validación**: elige objetivo y stop con el 70 % más antiguo de los datos y lo comprueba con el 30 % más reciente. Solo se aceptan los patrones con **≥ 75 % de acierto en validación** que además **ganan dinero de media** después de comisiones (0,1 % por lado) y deslizamiento.
 4. **Sin límite de operaciones al día**: entra en todo lo que pase los filtros, con una posición por moneda y sin que la suma de posiciones supere el capital. Arriesga el 1 % del capital hasta el stop y cierra por objetivo, por stop o a las 48 h.
 5. **Criterio Claude**: cada hora busca en el historial de cada moneda los momentos parecidos al actual (misma tendencia y RSI parecido), simula comprar en ellos con varias combinaciones de objetivo y stop, y abre la mejor si acertó ≥ 75 % en al menos 30 casos y ganó dinero de media.
-6. **Aprende**:
+6. **Límite de pérdida del 25 %**: si una operación pierde más del 25 % del capital inicial, se cierra. Si la pérdida total de la cuenta (cerradas más abiertas) llega al 25 % (2500 USDT), se cierra todo y el bot deja de operar hasta que pulses «Reiniciar».
+7. **Aprende**:
    - *Aprendiendo*: patrones validados que se están probando en simulación.
    - *Aprendido: funciona*: 10 operaciones o más con ≥ 75 % de acierto y ganancia media positiva.
    - *Aprendido: no funciona*: no cumplió lo esperado (o falló en validación). Queda bloqueado para no repetir el error.

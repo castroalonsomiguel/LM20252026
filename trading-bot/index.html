@@ -138,6 +138,7 @@
     <div class="kpi"><b id="k-open">—</b><span>Abiertas</span></div>
     <div class="kpi"><b id="k-win">—</b><span>Acierto real</span></div>
     <div class="kpi"><b id="k-pats">—</b><span>Patrones ≥ 75 %</span></div>
+    <div class="kpi"><b id="k-limit">—</b><span>Margen hasta el límite de pérdida</span></div>
   </div>
 
   <div id="snap-note" class="notice" hidden>
@@ -321,10 +322,15 @@
     $('k-win').textContent = st.closed.length ? `${Math.round(wins / st.closed.length * 100)} % (${st.closed.length})` : '—';
     const pats = Object.values(st.patterns);
     $('k-pats').textContent = pats.filter((p) => bot.tradable(p)).length;
+    const limit = E.CONFIG.startCapital * E.CONFIG.maxLossPct;
+    const room = limit - Math.max(0, E.CONFIG.startCapital - eq);
+    $('k-limit').textContent = `${room.toFixed(0)} de ${limit.toFixed(0)} USDT`;
+    $('k-limit').className = room < limit * 0.3 ? 'bad' : '';
 
     const st$ = $('status');
-    st$.textContent = st.running ? 'Operando' : 'Parado';
-    st$.className = 'pill ' + (st.running ? 'good' : 'muted');
+    st$.textContent = st.halted ? 'Detenido: pérdida del 25 %' : st.running ? 'Operando' : 'Parado';
+    st$.className = 'pill ' + (st.halted ? 'bad' : st.running ? 'good' : 'muted');
+    $('btn-run').disabled = !!st.halted;
     $('btn-run').textContent = st.running ? 'Pausar bot' : 'Iniciar bot';
     $('btn-run').className = st.running ? 'stop' : 'primary';
 

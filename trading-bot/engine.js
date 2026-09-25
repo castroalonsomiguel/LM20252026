@@ -399,7 +399,7 @@
     }
     tradesToday() {
       const d = localDay();
-      return this.state.open.concat(this.state.closed).filter((t) => localDay(t.entryT) === d).length;
+      return this.state.open.concat(this.state.closed).filter((t) => !t.test && localDay(t.entryT) === d).length;
     }
     equity() {
       let e = this.state.capital;
@@ -560,7 +560,7 @@
       const win = pnl > 0;
       this.log(`CIERRE ${t.sym} por ${reason}: ${pct(pnlPct, 2)} (${pnl >= 0 ? '+' : ''}${pnl.toFixed(2)} USDT)`, win ? 'ok' : 'bad');
       const p = s.patterns[pkey(t.sym, t.sid)];
-      if (p) this.learn(p, pnlPct);
+      if (p && !t.test) this.learn(p, pnlPct);
     }
 
     learn(p, pnlPct) {
@@ -583,6 +583,35 @@
       }
     }
 
+    // Operación de prueba: se abre al momento para ver el ciclo completo.
+    // No pasa el filtro del 75 %, no cuenta para el límite diario ni para el aprendizaje.
+    async testTrade(sym = 'BTC') {
+      const s = this.state;
+      if (s.open.some((t) => t.sym === sym)) throw new Error(`ya hay una posición abierta en ${sym}`);
+      const k = await klines(sym + CONFIG.quote, '1h', 400);
+      const price = k[k.length - 1].c;
+      s.prices[sym] = price;
+      const closed = closedOnly(k);
+      const a = indicators(closed).atr[closed.length - 1];
+      const entry = price * (1 + CONFIG.slipPct);
+      const tpP = entry + 1.0 * a, slP = entry - 1.5 * a;
+      const notional = Math.min(s.capital * CONFIG.riskPct / ((entry - slP) / entry), s.capital * CONFIG.maxPosPct);
+      s.open.push({
+        id: 'test' + Date.now().toString(36), sym, sid: 'prueba', test: true, entry, tpP, slP, notional,
+        entryT: Date.now(), checkedT: Date.now(), prob: null, probLow: null, status: 'prueba',
+      });
+      this.log(`PRUEBA: compra simulada de ${sym} a ${fmtPrice(entry)} · objetivo ${fmtPrice(tpP)} (+1 ATR), stop ${fmtPrice(slP)} (−1,5 ATR) · tamaño ${notional.toFixed(0)} USDT. No cuenta para el límite diario ni para el aprendizaje.`, 'trade');
+      this.save();
+    }
+
+    async closeNow(id) {
+      const t = this.state.open.find((o) => o.id === id);
+      if (!t) return;
+      const k = await klines(t.sym + CONFIG.quote, '1m', 1);
+      this.close(t, k[k.length - 1].c, 'cierre manual', Date.now());
+      this.save();
+    }
+
     async tick(progress) {
       if (this.busy) return;
       this.busy = true;
@@ -602,6 +631,8 @@
     import(obj) { if (!obj || obj.v !== 1) throw new Error('Archivo no válido'); this.state = obj; this.save(); }
   }
 
+  const setupName = (sid) => (sid === 'prueba' ? 'Operación de prueba' : SETUPS[sid] ? SETUPS[sid].name : sid);
+
   function fmtPrice(p) {
     if (!isFinite(p)) return '—';
     const d = p >= 1000 ? 2 : p >= 1 ? 3 : p >= 0.01 ? 5 : 7;
@@ -611,6 +642,6 @@
   return {
     CONFIG, COINS, SETUPS, Bot, freshState,
     indicators, studyCoin, rankCoins, simulate, stats, qualify, wilsonLow,
-    pct, fmtPrice, localDay,
+    pct, fmtPrice, localDay, setupName,
   };
 });

@@ -48,6 +48,7 @@
   button.primary { background: var(--accent); color: #1a1405; border-color: var(--accent); font-weight: 600; }
   button.stop { color: var(--bad); border-color: var(--bad); background: transparent; }
   button:disabled { opacity: .5; cursor: wait; }
+  .close-btn { font-size: 12px; padding: 2px 8px; margin-left: 6px; }
   #clock { font: 500 15px var(--mono); }
 
   .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
@@ -114,6 +115,7 @@
     <div class="spacer"></div>
     <div class="actions">
       <button id="btn-run" class="primary">Iniciar bot</button>
+      <button id="btn-test">Operación de prueba</button>
       <button id="btn-research">Actualizar estudio</button>
       <button id="btn-export">Exportar estado</button>
       <label class="btn" for="file-import">Importar estado</label>
@@ -324,9 +326,9 @@
     $('trade-body').innerHTML = trades.length ? trades.map((t) => {
       const live = t.isOpen && st.prices[t.sym] ? st.prices[t.sym] / t.entry - 1 : null;
       const res = t.isOpen ? `<span class="${cls(live)}">${pct(live, 2)} en curso</span>` : `<span class="${cls(t.pnl)}">${pct(t.pnlPct, 2)} · ${t.pnl >= 0 ? '+' : ''}${t.pnl.toFixed(2)}</span> <span class="muted">(${esc(t.reason)})</span>`;
-      return `<tr><td class="l">${t.isOpen ? '<span class="acc">Abierta</span>' : 'Cerrada'}</td><td class="l"><b>${t.sym}</b></td><td class="l">${esc(E.SETUPS[t.sid].name)}</td>
+      return `<tr><td class="l">${t.isOpen ? '<span class="acc">Abierta</span>' : 'Cerrada'}</td><td class="l"><b>${t.sym}</b></td><td class="l">${esc(E.setupName(t.sid))}</td>
         <td class="l">${time(t.entryT)}</td><td>${E.fmtPrice(t.entry)}</td><td>${E.fmtPrice(t.tpP)}</td><td>${E.fmtPrice(t.slP)}</td><td>${t.notional.toFixed(0)}</td>
-        <td>${Math.round(t.prob * 100)} %</td><td>${res}</td></tr>`;
+        <td>${t.prob === null ? '—' : Math.round(t.prob * 100) + ' %'}</td><td>${res}${t.isOpen ? ` <button class="close-btn" data-id="${t.id}">Cerrar</button>` : ''}</td></tr>`;
     }).join('') : `<tr><td colspan="10" class="empty">Todavía no hay operaciones. ${st.running ? 'El bot revisa el mercado cada minuto y entra cuando aparece una señal válida.' : 'Pulsa «Iniciar bot» para empezar.'}</td></tr>`;
 
     const groups = { learning: [], works: [], fails: [] };
@@ -357,6 +359,16 @@
     bot.save();
     bot.state.running ? startLoop() : stopLoop();
   };
+  $('btn-test').onclick = async (e) => {
+    e.target.disabled = true;
+    try { await bot.testTrade('BTC'); } catch (err) { bot.log('No se pudo abrir la prueba: ' + err.message, 'bad'); }
+    e.target.disabled = false;
+  };
+  $('trade-body').addEventListener('click', async (e) => {
+    const b = e.target.closest('.close-btn'); if (!b) return;
+    b.disabled = true;
+    try { await bot.closeNow(b.dataset.id); } catch (err) { bot.log('No se pudo cerrar: ' + err.message, 'bad'); b.disabled = false; }
+  });
   $('btn-research').onclick = async (e) => {
     e.target.disabled = true;
     try { await bot.research(progress); } catch (err) { bot.log('Error en el estudio: ' + err.message, 'bad'); }

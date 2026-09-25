@@ -631,7 +631,7 @@
     import(obj) { if (!obj || obj.v !== 1) throw new Error('Archivo no válido'); this.state = obj; this.save(); }
   }
 
-  const setupName = (sid) => (sid === 'prueba' ? 'Operación de prueba' : SETUPS[sid] ? SETUPS[sid].name : sid);
+  const setupName = (sid) => (sid === 'prueba' ? 'Operación de prueba' : sid === 'criterio' ? 'Criterio Claude (situación actual)' : SETUPS[sid] ? SETUPS[sid].name : sid);
 
   function fmtPrice(p) {
     if (!isFinite(p)) return '—';

@@ -25,6 +25,7 @@
     --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
   }
   * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
   body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.5 var(--body); padding: 0 16px 40px; }
   .wrap { max-width: 1280px; margin: 0 auto; display: grid; gap: 20px; }
   h1, h2, h3 { font-family: var(--display); font-weight: 600; margin: 0; text-wrap: balance; }
@@ -136,6 +137,10 @@
     <div class="kpi"><b id="k-pats">—</b><span>Patrones ≥ 75 %</span></div>
   </div>
 
+  <div id="snap-note" class="notice" hidden>
+    <p><b class="acc">Vista de solo lectura.</b> Estos son los datos del bot que se ejecuta en la sesión de Claude, con precios reales de Binance, actualizados el <span id="snap-time" class="num"></span>. Para usar los botones, abre <span class="num">index.html</span> en tu ordenador.</p>
+  </div>
+
   <div class="notice">
     <p><b class="acc">Dinero ficticio, datos reales.</b> Centinela lee precios reales de Binance y simula las compras y ventas: nunca envía órdenes. Solo abre una operación si el patrón acertó al menos el 75 % de las veces en datos que no se usaron para elegirlo y además ganó dinero de media tras comisiones. Es una estimación a partir del pasado, no una garantía: si ningún patrón llega al 75 %, el bot no opera ese día.</p>
   </div>
@@ -199,7 +204,9 @@
   const E = window.Centinela;
   const $ = (id) => document.getElementById(id);
   const KEY = 'centinela_state_v1';
-  const storage = {
+  // Instantánea: versión publicada en Claude con el estado del bot incrustado (solo lectura).
+  const SNAP = window.__CENTINELA_SNAPSHOT__ || null;
+  const storage = SNAP ? { load: () => SNAP.state, save() {} } : {
     load() { try { return JSON.parse(localStorage.getItem(KEY)); } catch { return null; } },
     save(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch {} },
   };
@@ -410,6 +417,16 @@
     }
   }
 
+  if (SNAP) {
+    document.querySelector('.actions').hidden = true;
+    $('status').textContent = 'Instantánea';
+    $('snap-note').hidden = false;
+    $('snap-time').textContent = new Date(SNAP.at).toLocaleString('es-ES');
+    render();
+    $('status').textContent = 'Instantánea';
+    $('status').className = 'pill acc';
+    return;
+  }
   render();
   if (bot.state.running) startLoop(); else cycleResearch();
 })();

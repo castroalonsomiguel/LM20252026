@@ -87,6 +87,9 @@
   .t-Bajista { color: var(--bad); background: rgba(240,97,109,.12); }
   .t-Lateral { color: var(--muted); background: rgba(126,146,155,.12); }
 
+  .ledger { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; }
+  .stack { display: grid; gap: 8px; max-height: 420px; overflow-y: auto; }
+  .tag { font: 500 10px var(--mono); letter-spacing: .08em; text-transform: uppercase; padding: 1px 6px; border: 1px solid var(--line); border-radius: 3px; color: var(--muted); }
   .learn { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
   .col { background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--c); padding: 12px 14px; display: grid; gap: 10px; align-content: start; }
   .col h3 { font-size: 15px; display: flex; justify-content: space-between; }
@@ -178,6 +181,14 @@
         <thead><tr><th class="l">Estado</th><th class="l">Moneda</th><th class="l">Patrón</th><th class="l">Entrada</th><th>Precio entrada</th><th>Objetivo</th><th>Stop</th><th>Tamaño</th><th>Prob.</th><th>Resultado</th></tr></thead>
         <tbody id="trade-body"></tbody>
       </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Registro de operaciones</h2><p>Todas las operaciones cerradas, separadas por resultado después de comisiones. Las de prueba se marcan aparte.</p></div>
+    <div class="ledger">
+      <div class="col" style="--c: var(--good)"><h3>Ganadoras <span id="n-won" class="num muted"></span></h3><p id="sum-won" class="hint num"></p><div id="c-won" class="stack"></div></div>
+      <div class="col" style="--c: var(--bad)"><h3>Fracasadas <span id="n-lost" class="num muted"></span></h3><p id="sum-lost" class="hint num"></p><div id="c-lost" class="stack"></div></div>
     </div>
   </section>
 
@@ -337,6 +348,23 @@
         <td class="l">${time(t.entryT)}</td><td>${E.fmtPrice(t.entry)}</td><td>${E.fmtPrice(t.tpP)}</td><td>${E.fmtPrice(t.slP)}</td><td>${t.notional.toFixed(0)}</td>
         <td>${t.prob === null ? '—' : Math.round(t.prob * 100) + ' %'}</td><td>${res}${t.isOpen ? ` <button class="close-btn" data-id="${t.id}">Cerrar</button>` : ''}</td></tr>`;
     }).join('') : `<tr><td colspan="10" class="empty">Todavía no hay operaciones. ${st.running ? 'El bot revisa el mercado cada minuto y entra cuando aparece una señal válida.' : 'Pulsa «Iniciar bot» para empezar.'}</td></tr>`;
+
+    const tradeCard = (t) => {
+      const hours = ((t.exitT - t.entryT) / 3600e3);
+      return `<div class="card"><b>${t.sym} · ${esc(E.setupName(t.sid))} ${t.test ? '<span class="tag">prueba</span>' : ''}</b>
+        <div class="row"><span class="${cls(t.pnl)}">${pct(t.pnlPct, 2)} · ${t.pnl >= 0 ? '+' : ''}${t.pnl.toFixed(2)} USDT</span><span>cierre por ${esc(t.reason)}</span></div>
+        <div class="row"><span>${time(t.entryT)} → ${time(t.exitT)} (${hours < 1 ? Math.round(hours * 60) + ' min' : hours.toFixed(1) + ' h'})</span><span>${E.fmtPrice(t.entry)} → ${E.fmtPrice(t.exit)}</span>${t.prob ? `<span>prob. estimada ${Math.round(t.prob * 100)} %</span>` : ''}</div></div>`;
+    };
+    const won = st.closed.filter((t) => t.pnl > 0), lost = st.closed.filter((t) => t.pnl <= 0);
+    const summary = (arr) => {
+      if (!arr.length) return '';
+      const sum = arr.reduce((a, t) => a + t.pnl, 0);
+      return `Total ${sum >= 0 ? '+' : ''}${sum.toFixed(2)} USDT · media ${pct(arr.reduce((a, t) => a + t.pnlPct, 0) / arr.length, 2)} por operación`;
+    };
+    $('n-won').textContent = won.length; $('n-lost').textContent = lost.length;
+    $('sum-won').textContent = summary(won); $('sum-lost').textContent = summary(lost);
+    $('c-won').innerHTML = won.length ? won.map(tradeCard).join('') : '<p class="empty">Aún no hay operaciones ganadoras.</p>';
+    $('c-lost').innerHTML = lost.length ? lost.map(tradeCard).join('') : '<p class="empty">Aún no hay operaciones fracasadas.</p>';
 
     const groups = { learning: [], works: [], fails: [] };
     for (const p of pats) {

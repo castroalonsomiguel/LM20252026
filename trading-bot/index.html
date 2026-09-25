@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Centinela Trading Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #0b1014;
+    --panel: #111a20;
+    --panel-2: #152129;
+    --line: #1f2d36;
+    --text: #d8e3e7;
+    --muted: #7e929b;
+    --accent: #e8b04b;
+    --good: #3fc98a;
+    --bad: #f0616d;
+    --info: #5aa9e6;
+    --display: "Chakra Petch", "Segoe UI", system-ui, sans-serif;
+    --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.5 var(--body); padding: 0 16px 40px; }
+  .wrap { max-width: 1280px; margin: 0 auto; display: grid; gap: 20px; }
+  h1, h2, h3 { font-family: var(--display); font-weight: 600; margin: 0; text-wrap: balance; }
+  h2 { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .muted { color: var(--muted); }
+  .good { color: var(--good); } .bad { color: var(--bad); } .acc { color: var(--accent); }
+
+  header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); padding-block: 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand h1 { font-size: 20px; letter-spacing: .08em; }
+  .brand small { display: block; font: 500 10px var(--mono); letter-spacing: .2em; color: var(--muted); }
+  .eye { width: 26px; height: 26px; border: 2px solid var(--accent); border-radius: 50%; display: grid; place-items: center; }
+  .eye::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+  .pill { font: 500 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; padding: 4px 10px; border: 1px solid currentColor; border-radius: 3px; }
+  .spacer { flex: 1; }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  button, .btn { font: 500 13px var(--body); color: var(--text); background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; padding: 7px 12px; cursor: pointer; }
+  button:hover, .btn:hover { border-color: var(--muted); }
+  button:focus-visible, .btn:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  button.primary { background: var(--accent); color: #1a1405; border-color: var(--accent); font-weight: 600; }
+  button.stop { color: var(--bad); border-color: var(--bad); background: transparent; }
+  button:disabled { opacity: .5; cursor: wait; }
+  #clock { font: 500 15px var(--mono); }
+
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .kpi { background: var(--panel); padding: 12px 14px; }
+  .kpi b { display: block; font: 500 20px var(--mono); font-variant-numeric: tabular-nums; }
+  .kpi span { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+
+  .notice { border-left: 3px solid var(--accent); background: var(--panel); padding: 12px 16px; max-width: 100%; }
+  .notice p { margin: 0; max-width: 95ch; }
+  .progress { height: 3px; background: var(--line); overflow: hidden; }
+  .progress i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+
+  section { display: grid; gap: 12px; }
+  .sec-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; }
+  .sec-head p { margin: 0; color: var(--muted); font-size: 13px; }
+  .table-box { overflow-x: auto; border: 1px solid var(--line); background: var(--panel); }
+  table { border-collapse: collapse; width: 100%; min-width: 980px; }
+  th, td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { font: 500 11px var(--body); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); background: var(--panel-2); position: sticky; top: 0; }
+  th:first-child, td:first-child, th.l, td.l { text-align: left; }
+  td { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 13px; }
+  tr.coin { cursor: pointer; }
+  tr.coin:hover td { background: var(--panel-2); }
+  tr.top td:first-child { box-shadow: inset 3px 0 var(--accent); }
+  .detail td { white-space: normal; text-align: left; font-family: var(--body); background: var(--bg); padding: 14px 16px; }
+  .detail-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 20px; }
+  .detail-grid p { margin: 0 0 8px; max-width: 70ch; }
+  canvas.spark { width: 100%; height: 120px; display: block; }
+  canvas.mini { width: 110px; height: 28px; display: block; }
+  .score { display: inline-flex; align-items: center; gap: 8px; }
+  .bar { width: 60px; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--accent); }
+  .trend { font: 500 11px var(--mono); padding: 2px 6px; border-radius: 3px; }
+  .t-Alcista { color: var(--good); background: rgba(63,201,138,.12); }
+  .t-Bajista { color: var(--bad); background: rgba(240,97,109,.12); }
+  .t-Lateral { color: var(--muted); background: rgba(126,146,155,.12); }
+
+  .learn { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+  .col { background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--c); padding: 12px 14px; display: grid; gap: 10px; align-content: start; }
+  .col h3 { font-size: 15px; display: flex; justify-content: space-between; }
+  .col p.hint { margin: 0; font-size: 12px; color: var(--muted); }
+  .card { background: var(--bg); border: 1px solid var(--line); padding: 10px 12px; display: grid; gap: 4px; }
+  .card b { font-family: var(--display); font-weight: 600; }
+  .card .row { display: flex; flex-wrap: wrap; gap: 4px 14px; font: 12px var(--mono); color: var(--muted); }
+  .empty { font-size: 13px; color: var(--muted); font-style: italic; }
+  .lessons { display: grid; gap: 6px; max-height: 320px; overflow-y: auto; }
+  .lessons div { font-size: 13px; padding: 6px 10px; background: var(--panel); border-left: 3px solid var(--muted); }
+  .lessons .good { border-color: var(--good); color: var(--text); } .lessons .bad { border-color: var(--bad); color: var(--text); }
+  .log { font: 12px/1.6 var(--mono); background: var(--panel); border: 1px solid var(--line); padding: 10px 12px; max-height: 280px; overflow-y: auto; }
+  .log div { white-space: pre-wrap; }
+  .log .trade { color: var(--accent); } .log .ok { color: var(--good); } .log .bad { color: var(--bad); } .log .warn { color: #c9a86a; }
+  .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+  details summary { cursor: pointer; color: var(--muted); }
+  @media (max-width: 700px) { .detail-grid { grid-template-columns: 1fr; } header { position: static; } }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><div class="eye" aria-hidden="true"></div><div><h1>CENTINELA</h1><small>TRADING LAB · SIMULACIÓN</small></div></div>
+    <span id="status" class="pill muted">Parado</span>
+    <span id="clock" class="num"></span>
+    <div class="spacer"></div>
+    <div class="actions">
+      <button id="btn-run" class="primary">Iniciar bot</button>
+      <button id="btn-research">Actualizar estudio</button>
+      <button id="btn-export">Exportar estado</button>
+      <label class="btn" for="file-import">Importar estado</label>
+      <input id="file-import" type="file" accept="application/json" hidden>
+      <button id="btn-reset" class="stop">Reiniciar</button>
+    </div>
+  </header>
+
+  <div class="progress" aria-hidden="true"><i id="progress"></i></div>
+  <p id="progress-text" class="muted" style="margin:0"></p>
+
+  <div class="kpis">
+    <div class="kpi"><b id="k-equity">—</b><span>Capital (USDT ficticios)</span></div>
+    <div class="kpi"><b id="k-pnl">—</b><span>Resultado total</span></div>
+    <div class="kpi"><b id="k-today">—</b><span>Operaciones hoy</span></div>
+    <div class="kpi"><b id="k-open">—</b><span>Abiertas</span></div>
+    <div class="kpi"><b id="k-win">—</b><span>Acierto real</span></div>
+    <div class="kpi"><b id="k-pats">—</b><span>Patrones ≥ 75 %</span></div>
+  </div>
+
+  <div class="notice">
+    <p><b class="acc">Dinero ficticio, datos reales.</b> Centinela lee precios reales de Binance y simula las compras y ventas: nunca envía órdenes. Solo abre una operación si el patrón acertó al menos el 75 % de las veces en datos que no se usaron para elegirlo y además ganó dinero de media tras comisiones. Es una estimación a partir del pasado, no una garantía: si ningún patrón llega al 75 %, el bot no opera ese día.</p>
+  </div>
+
+  <section>
+    <div class="sec-head"><h2>Estudio a largo plazo por moneda</h2><p id="study-date">Toca una fila para ver el análisis completo.</p></div>
+    <div class="table-box">
+      <table>
+        <thead><tr>
+          <th>#</th><th class="l">Moneda</th><th>Precio</th><th>30 d</th><th>90 d</th><th>1 año</th><th>Anual (CAGR)</th><th>Volatilidad</th><th>Caída máx. 1 a</th><th>Sharpe</th><th class="l">Tendencia</th><th>Corr. BTC</th><th class="l">1 año</th><th class="l">Puntuación</th>
+        </tr></thead>
+        <tbody id="study-body"><tr><td colspan="14" class="empty">Cargando datos de Binance…</td></tr></tbody>
+      </table>
+    </div>
+    <details>
+      <summary>Cómo se calcula la puntuación</summary>
+      <p class="muted" style="max-width:90ch">Se compara cada moneda con las demás (puntuación relativa de 0 a 100) usando las velas diarias de hasta 1000 días: 30 % rentabilidad ajustada al riesgo (Sharpe del último año), 20 % impulso a 3 y 12 meses, 15 % tendencia (precio frente a las medias de 50 y 200 días), 15 % caída máxima del último año, 10 % liquidez y 10 % volatilidad. Indica qué moneda ha tenido mejor comportamiento y más sano, que es lo más cercano a “rentable a la larga” que los datos permiten medir. No predice el precio futuro.</p>
+    </details>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Patrones que el bot puede operar</h2><p>Probabilidad = aciertos del backtest y de la simulación real juntos. «Mínimo» es el límite inferior con un 95 % de confianza.</p></div>
+    <div class="table-box">
+      <table>
+        <thead><tr><th class="l">Moneda</th><th class="l">Patrón</th><th>Prob. ganar</th><th>Mínimo</th><th>Ops. backtest</th><th>Media por op.</th><th>Objetivo / stop (ATR)</th><th class="l">Estado</th></tr></thead>
+        <tbody id="pat-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Operaciones</h2><p>Máximo 3 al día, 3 abiertas a la vez y una por moneda. Cierre por objetivo, stop o a las 48 h.</p></div>
+    <div class="table-box">
+      <table>
+        <thead><tr><th class="l">Estado</th><th class="l">Moneda</th><th class="l">Patrón</th><th class="l">Entrada</th><th>Precio entrada</th><th>Objetivo</th><th>Stop</th><th>Tamaño</th><th>Prob.</th><th>Resultado</th></tr></thead>
+        <tbody id="trade-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Aprendizaje</h2><p>Un patrón pasa a «aprendido» con 10 operaciones reales: funciona si mantiene ≥ 75 % de acierto y gana dinero; si no, se bloquea para no repetir el error.</p></div>
+    <div class="learn">
+      <div class="col" style="--c: var(--info)"><h3>Aprendiendo <span id="n-learning" class="num muted"></span></h3><p class="hint">Patrones validados que se están probando en simulación real.</p><div id="c-learning" class="stack"></div></div>
+      <div class="col" style="--c: var(--good)"><h3>Aprendido: funciona <span id="n-works" class="num muted"></span></h3><p class="hint">Confirmados con operaciones reales. Tienen prioridad.</p><div id="c-works" class="stack"></div></div>
+      <div class="col" style="--c: var(--bad)"><h3>Aprendido: no funciona <span id="n-fails" class="num muted"></span></h3><p class="hint">Se creía que iban a funcionar y no lo hicieron. Bloqueados.</p><div id="c-fails" class="stack"></div></div>
+    </div>
+    <h3 style="font-size:14px">Diario de lecciones</h3>
+    <div id="lessons" class="lessons"></div>
+  </section>
+
+  <section>
+    <h2>Registro</h2>
+    <div id="log" class="log"></div>
+  </section>
+</div>
+
+<script src="engine.js"></script>
+<script>
+(() => {
+  const E = window.Centinela;
+  const $ = (id) => document.getElementById(id);
+  const KEY = 'centinela_state_v1';
+  const storage = {
+    load() { try { return JSON.parse(localStorage.getItem(KEY)); } catch { return null; } },
+    save(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch {} },
+  };
+  const coinName = (sym) => (E.COINS.find((c) => c.sym === sym) || {}).name || sym;
+  const coinCtx = (sym) => (E.COINS.find((c) => c.sym === sym) || {}).ctx || '';
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const cls = (v) => (v > 0 ? 'good' : v < 0 ? 'bad' : '');
+  const pct = E.pct;
+  const time = (t) => new Date(t).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+  const open = new Set();
+  let timer = null;
+
+  const bot = new E.Bot({ storage, onChange: () => render() });
+
+  function progress(f, msg) {
+    $('progress').style.width = Math.round(f * 100) + '%';
+    $('progress-text').textContent = f >= 1 ? '' : `${Math.round(f * 100)} % · ${msg}`;
+  }
+
+  function drawSpark(cv, data, big) {
+    if (!data || data.length < 2) return;
+    const dpr = window.devicePixelRatio || 1;
+    const w = cv.clientWidth, h = cv.clientHeight;
+    cv.width = w * dpr; cv.height = h * dpr;
+    const g = cv.getContext('2d'); g.scale(dpr, dpr);
+    const min = Math.min(...data), max = Math.max(...data);
+    const pad = big ? 8 : 3;
+    const X = (i) => pad + (i / (data.length - 1)) * (w - 2 * pad);
+    const Y = (v) => h - pad - ((v - min) / (max - min || 1)) * (h - 2 * pad);
+    const up = data[data.length - 1] >= data[0];
+    const col = getComputedStyle(document.documentElement).getPropertyValue(up ? '--good' : '--bad').trim();
+    if (big) {
+      g.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--line').trim();
+      g.lineWidth = 1;
+      for (let k = 0; k <= 3; k++) { const y = pad + k * (h - 2 * pad) / 3; g.beginPath(); g.moveTo(pad, y); g.lineTo(w - pad, y); g.stroke(); }
+    }
+    g.beginPath(); data.forEach((v, i) => (i ? g.lineTo(X(i), Y(v)) : g.moveTo(X(i), Y(v))));
+    g.strokeStyle = col; g.lineWidth = big ? 1.6 : 1.2; g.stroke();
+    g.lineTo(X(data.length - 1), h - pad); g.lineTo(X(0), h - pad); g.closePath();
+    g.globalAlpha = 0.12; g.fillStyle = col; g.fill(); g.globalAlpha = 1;
+    g.beginPath(); g.arc(X(data.length - 1), Y(data[data.length - 1]), big ? 3.5 : 2.2, 0, 7); g.fillStyle = col; g.fill();
+  }
+
+  function verdictText(s) {
+    if (s.rank <= 3) return `Está entre las 3 mejores del estudio (puesto ${s.rank}).`;
+    if (s.score >= 55) return `Por encima de la media del grupo (puesto ${s.rank}).`;
+    if (s.score >= 45) return `En la media del grupo (puesto ${s.rank}).`;
+    return `Por debajo de la media del grupo (puesto ${s.rank}).`;
+  }
+
+  function renderStudy(st) {
+    const body = $('study-body');
+    if (!st.ranking.length) return;
+    $('study-date').textContent = `Datos del ${time(st.lastResearch)}. Toca una fila para ver el análisis completo.` + (st.missing.length ? ` Sin datos en Binance: ${st.missing.join(', ')}.` : '');
+    body.innerHTML = st.ranking.map((sym) => {
+      const s = st.studies[sym];
+      const price = st.prices[sym] || s.price;
+      const row = `<tr class="coin${s.rank <= 3 ? ' top' : ''}" data-sym="${sym}" tabindex="0">
+        <td>${s.rank}</td><td class="l"><b>${sym}</b> <span class="muted">${esc(coinName(sym))}</span></td>
+        <td>${E.fmtPrice(price)}</td>
+        <td class="${cls(s.r30)}">${pct(s.r30)}</td><td class="${cls(s.r90)}">${pct(s.r90)}</td><td class="${cls(s.r365)}">${pct(s.r365)}</td>
+        <td class="${cls(s.cagr)}">${pct(s.cagr)}</td><td>${(s.volAnn * 100).toFixed(0)} %</td>
+        <td class="bad">${pct(s.maxDD365, 0)}</td><td class="${cls(s.sharpe)}">${s.sharpe.toFixed(2)}</td>
+        <td class="l"><span class="trend t-${s.trend}">${s.trend}</span></td>
+        <td>${s.corr === null ? '—' : s.corr.toFixed(2)}</td>
+        <td class="l"><canvas class="mini" data-spark="${sym}"></canvas></td>
+        <td class="l"><span class="score"><span class="bar"><i style="width:${s.score.toFixed(0)}%"></i></span>${s.score.toFixed(0)}</span></td></tr>`;
+      const detail = open.has(sym) ? `<tr class="detail"><td colspan="14"><div class="detail-grid">
+          <div>
+            <p><b>${esc(coinName(sym))}.</b> ${esc(coinCtx(sym))}</p>
+            <p><b>Veredicto:</b> ${verdictText(s)}${s.pros.length ? ` A favor: ${s.pros.join(' y ')}.` : ''}${s.cons.length ? ` En contra: ${s.cons.join(' y ')}.` : ''}</p>
+            <p class="muted num">Historial analizado: ${s.years.toFixed(1)} años · días en positivo (1 a): ${(s.upDays * 100).toFixed(0)} % · Sortino: ${s.sortino.toFixed(2)} · beta frente a BTC: ${s.beta === null ? '—' : s.beta.toFixed(2)} · caída máx. del periodo: ${pct(s.maxDDAll, 0)} · distancia al máximo del periodo: ${pct(s.distATH, 0)} · media 50 d: ${E.fmtPrice(s.sma50)} · media 200 d: ${E.fmtPrice(s.sma200)} · volumen medio 30 d: ${(s.qv30 / 1e6).toFixed(0)} M USDT</p>
+          </div>
+          <div><canvas class="spark" data-spark-big="${sym}"></canvas><p class="muted" style="font-size:12px;margin:4px 0 0">Precio de cierre diario, último año.</p></div>
+        </div></td></tr>` : '';
+      return row + detail;
+    }).join('');
+    body.querySelectorAll('canvas[data-spark]').forEach((cv) => drawSpark(cv, st.studies[cv.dataset.spark].spark, false));
+    body.querySelectorAll('canvas[data-spark-big]').forEach((cv) => drawSpark(cv, st.studies[cv.dataset.sparkBig].spark, true));
+  }
+
+  const statusLabel = { aprendiendo: 'Aprendiendo', funciona: 'Funciona', 'no-funciona': 'No funciona', descartado: 'Descartado' };
+
+  function patternCard(p) {
+    const pr = bot.probability(p);
+    const L = p.live;
+    return `<div class="card"><b>${p.sym} · ${esc(E.SETUPS[p.sid].name)}</b>
+      <div class="row"><span>prob. ${Math.round(pr.p * 100)} %</span><span>backtest ${p.train ? p.train.n + p.val.n : 0} ops</span><span>real ${L.n} ops${L.n ? ` · ${Math.round(L.w / L.n * 100)} % · ${pct(L.sum / L.n, 2)}` : ''}</span></div></div>`;
+  }
+
+  function render() {
+    const st = bot.state;
+    const eq = bot.equity();
+    const pnl = eq - E.CONFIG.startCapital;
+    $('k-equity').textContent = eq.toLocaleString('es-ES', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+    $('k-pnl').textContent = `${pnl >= 0 ? '+' : ''}${pnl.toFixed(2)} (${pct(pnl / E.CONFIG.startCapital, 2)})`;
+    $('k-pnl').className = cls(pnl);
+    $('k-today').textContent = `${bot.tradesToday()} / ${E.CONFIG.maxTradesPerDay}`;
+    $('k-open').textContent = st.open.length;
+    const wins = st.closed.filter((t) => t.pnl > 0).length;
+    $('k-win').textContent = st.closed.length ? `${Math.round(wins / st.closed.length * 100)} % (${st.closed.length})` : '—';
+    const pats = Object.values(st.patterns);
+    $('k-pats').textContent = pats.filter((p) => bot.tradable(p)).length;
+
+    const st$ = $('status');
+    st$.textContent = st.running ? 'Operando' : 'Parado';
+    st$.className = 'pill ' + (st.running ? 'good' : 'muted');
+    $('btn-run').textContent = st.running ? 'Pausar bot' : 'Iniciar bot';
+    $('btn-run').className = st.running ? 'stop' : 'primary';
+
+    renderStudy(st);
+
+    const valid = pats.filter((p) => p.verdict === 'valido').sort((a, b) => bot.probability(b).p - bot.probability(a).p);
+    $('pat-body').innerHTML = valid.length ? valid.map((p) => {
+      const pr = bot.probability(p);
+      const bt = { n: p.train.n + p.val.n, avg: (p.train.avg * p.train.n + p.val.avg * p.val.n) / (p.train.n + p.val.n) };
+      return `<tr><td class="l"><b>${p.sym}</b></td><td class="l" title="${esc(E.SETUPS[p.sid].desc)}">${esc(E.SETUPS[p.sid].name)}</td>
+        <td class="${pr.p >= E.CONFIG.minWin ? 'good' : 'bad'}">${(pr.p * 100).toFixed(0)} %</td><td class="muted">${(pr.low * 100).toFixed(0)} %</td>
+        <td>${bt.n}</td><td class="${cls(bt.avg)}">${pct(bt.avg, 2)}</td><td>${p.tp} / ${p.sl}</td>
+        <td class="l">${statusLabel[p.status] || '—'}</td></tr>`;
+    }).join('') : `<tr><td colspan="8" class="empty">${st.lastResearch ? 'Ningún patrón llega al 75 % en validación con los datos actuales. El bot no operará hasta el próximo estudio (cada 24 h).' : 'Aún no hay estudio.'}</td></tr>`;
+
+    const trades = st.open.map((t) => ({ ...t, isOpen: true })).concat(st.closed.slice(0, 40));
+    $('trade-body').innerHTML = trades.length ? trades.map((t) => {
+      const live = t.isOpen && st.prices[t.sym] ? st.prices[t.sym] / t.entry - 1 : null;
+      const res = t.isOpen ? `<span class="${cls(live)}">${pct(live, 2)} en curso</span>` : `<span class="${cls(t.pnl)}">${pct(t.pnlPct, 2)} · ${t.pnl >= 0 ? '+' : ''}${t.pnl.toFixed(2)}</span> <span class="muted">(${esc(t.reason)})</span>`;
+      return `<tr><td class="l">${t.isOpen ? '<span class="acc">Abierta</span>' : 'Cerrada'}</td><td class="l"><b>${t.sym}</b></td><td class="l">${esc(E.SETUPS[t.sid].name)}</td>
+        <td class="l">${time(t.entryT)}</td><td>${E.fmtPrice(t.entry)}</td><td>${E.fmtPrice(t.tpP)}</td><td>${E.fmtPrice(t.slP)}</td><td>${t.notional.toFixed(0)}</td>
+        <td>${Math.round(t.prob * 100)} %</td><td>${res}</td></tr>`;
+    }).join('') : `<tr><td colspan="10" class="empty">Todavía no hay operaciones. ${st.running ? 'El bot revisa el mercado cada minuto y entra cuando aparece una señal válida.' : 'Pulsa «Iniciar bot» para empezar.'}</td></tr>`;
+
+    const groups = { learning: [], works: [], fails: [] };
+    for (const p of pats) {
+      if (p.status === 'funciona') groups.works.push(p);
+      else if (p.status === 'no-funciona' || p.status === 'descartado' && p.verdict === 'falla-validacion') groups.fails.push(p);
+      else if (p.status === 'aprendiendo') groups.learning.push(p);
+    }
+    const fill = (id, arr, empty) => { $('c-' + id).innerHTML = arr.length ? arr.map(patternCard).join('') : `<p class="empty">${empty}</p>`; $('n-' + id).textContent = arr.length; };
+    fill('learning', groups.learning, 'Nada en prueba ahora mismo.');
+    fill('works', groups.works, 'Aún ningún patrón ha llegado a 10 operaciones reales con éxito.');
+    fill('fails', groups.fails, 'Aún no hay errores registrados.');
+
+    $('lessons').innerHTML = st.lessons.length ? st.lessons.map((l) => `<div class="${l.kind}"><span class="muted num">${time(l.t)}</span> · ${esc(l.text)}</div>`).join('') : '<p class="empty">Las lecciones aparecen aquí cuando un patrón se descarta o se confirma.</p>';
+    $('log').innerHTML = st.log.map((l) => `<div class="${l.kind}">${time(l.t)}  ${esc(l.msg)}</div>`).join('') || '<div class="muted">Sin actividad.</div>';
+  }
+
+  async function cycle() {
+    await bot.tick(progress);
+    progress(1, '');
+  }
+  function startLoop() { if (!timer) { timer = setInterval(cycle, 60e3); cycle(); } }
+  function stopLoop() { clearInterval(timer); timer = null; }
+
+  $('btn-run').onclick = () => {
+    bot.state.running = !bot.state.running;
+    bot.log(bot.state.running ? 'Bot iniciado.' : 'Bot pausado.');
+    bot.save();
+    bot.state.running ? startLoop() : stopLoop();
+  };
+  $('btn-research').onclick = async (e) => {
+    e.target.disabled = true;
+    try { await bot.research(progress); } catch (err) { bot.log('Error en el estudio: ' + err.message, 'bad'); }
+    progress(1, ''); e.target.disabled = false;
+  };
+  $('btn-export').onclick = () => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(bot.state)], { type: 'application/json' }));
+    a.download = `centinela-${E.localDay()}.json`;
+    a.click();
+  };
+  $('file-import').onchange = async (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    try { bot.import(JSON.parse(await f.text())); bot.log('Estado importado.', 'ok'); } catch (err) { bot.log('No se pudo importar: ' + err.message, 'bad'); }
+    e.target.value = '';
+  };
+  let resetArmed = null;
+  $('btn-reset').onclick = (e) => {
+    if (!resetArmed) {
+      e.target.textContent = 'Pulsa otra vez para borrar todo';
+      resetArmed = setTimeout(() => { e.target.textContent = 'Reiniciar'; resetArmed = null; }, 4000);
+      return;
+    }
+    clearTimeout(resetArmed); resetArmed = null; e.target.textContent = 'Reiniciar';
+    stopLoop(); bot.reset(); bot.log('Todo reiniciado: capital de nuevo en 10 000 USDT.'); cycleResearch();
+  };
+  $('study-body').addEventListener('click', (e) => {
+    const tr = e.target.closest('tr.coin'); if (!tr) return;
+    const s = tr.dataset.sym; open.has(s) ? open.delete(s) : open.add(s); render();
+  });
+  $('study-body').addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.closest('tr.coin')?.click(); });
+  setInterval(() => { $('clock').textContent = new Date().toLocaleTimeString('es-ES'); }, 1000);
+  window.addEventListener('resize', () => render());
+
+  async function cycleResearch() {
+    if (Date.now() - bot.state.lastResearch > E.CONFIG.researchEveryH * 3600e3) {
+      try { await bot.research(progress); } catch (err) { bot.log('No se pudo conectar con Binance: ' + err.message + '. Comprueba tu conexión.', 'bad'); }
+      progress(1, '');
+    }
+  }
+
+  render();
+  if (bot.state.running) startLoop(); else cycleResearch();
+})();
+</script>
+</body>
+</html>

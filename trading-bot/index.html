@@ -175,7 +175,7 @@
   </section>
 
   <section>
-    <div class="sec-head"><h2>Operaciones</h2><p>Máximo 3 al día, 3 abiertas a la vez y una por moneda. Cierre por objetivo, stop o a las 48 h.</p></div>
+    <div class="sec-head"><h2>Operaciones</h2><p>Sin límite diario: entra en todo lo que pase los filtros, con una posición por moneda y sin superar el capital. Cierre por objetivo, stop o a las 48 h.</p></div>
     <div class="table-box">
       <table>
         <thead><tr><th class="l">Estado</th><th class="l">Moneda</th><th class="l">Patrón</th><th class="l">Entrada</th><th>Precio entrada</th><th>Objetivo</th><th>Stop</th><th>Tamaño</th><th>Prob.</th><th>Resultado</th></tr></thead>
@@ -304,8 +304,8 @@
   function patternCard(p) {
     const pr = bot.probability(p);
     const L = p.live;
-    return `<div class="card"><b>${p.sym} · ${esc(E.SETUPS[p.sid].name)}</b>
-      <div class="row"><span>prob. ${Math.round(pr.p * 100)} %</span><span>backtest ${p.train ? p.train.n + p.val.n : 0} ops</span><span>real ${L.n} ops${L.n ? ` · ${Math.round(L.w / L.n * 100)} % · ${pct(L.sum / L.n, 2)}` : ''}</span></div></div>`;
+    return `<div class="card"><b>${p.sym} · ${esc(E.setupName(p.sid))}</b>
+      <div class="row"><span>prob. ${Math.round(pr.p * 100)} %</span><span>backtest ${p.bt ? p.bt.n : p.train ? p.train.n + p.val.n : 0} ops</span><span>real ${L.n} ops${L.n ? ` · ${Math.round(L.w / L.n * 100)} % · ${pct(L.sum / L.n, 2)}` : ''}</span></div></div>`;
   }
 
   function render() {
@@ -315,7 +315,7 @@
     $('k-equity').textContent = eq.toLocaleString('es-ES', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
     $('k-pnl').textContent = `${pnl >= 0 ? '+' : ''}${pnl.toFixed(2)} (${pct(pnl / E.CONFIG.startCapital, 2)})`;
     $('k-pnl').className = cls(pnl);
-    $('k-today').textContent = `${bot.tradesToday()} / ${E.CONFIG.maxTradesPerDay}`;
+    $('k-today').textContent = isFinite(E.CONFIG.maxTradesPerDay) ? `${bot.tradesToday()} / ${E.CONFIG.maxTradesPerDay}` : `${bot.tradesToday()} · sin límite`;
     $('k-open').textContent = st.open.length;
     const wins = st.closed.filter((t) => t.pnl > 0).length;
     $('k-win').textContent = st.closed.length ? `${Math.round(wins / st.closed.length * 100)} % (${st.closed.length})` : '—';

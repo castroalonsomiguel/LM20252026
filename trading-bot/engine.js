@@ -25,8 +25,10 @@
     startCapital: 10000,      // capital ficticio inicial
     riskPct: 0.01,            // se arriesga el 1 % del capital hasta el stop
     maxPosPct: 0.30,          // ninguna posición supera el 30 % del capital
-    maxTradesPerDay: 3,
-    maxOpen: 3,
+    maxTradesPerDay: Infinity, // sin límite diario: entra en todo lo que pase los filtros
+    maxOpen: Infinity,         // sin límite de posiciones (una por moneda y sin superar el capital)
+    maxExposure: 1.0,          // la suma de posiciones abiertas no supera el 100 % del capital
+    regimeMinN: 30,            // casos parecidos mínimos para el «Criterio Claude»
     minWin: 0.75,             // probabilidad mínima de ganar exigida
     feePct: 0.001,            // comisión por lado (Binance spot)
     slipPct: 0.0005,          // deslizamiento estimado por lado
@@ -467,7 +469,7 @@
     }
 
     probability(p) {
-      const bt = { n: (p.train?.n || 0) + (p.val?.n || 0), w: (p.train?.w || 0) + (p.val?.w || 0) };
+      const bt = p.bt || { n: (p.train?.n || 0) + (p.val?.n || 0), w: (p.train?.w || 0) + (p.val?.w || 0) };
       const n = bt.n + p.live.n, w = bt.w + p.live.w;
       return { p: n ? w / n : 0, low: wilsonLow(w, n), n };
     }
@@ -501,33 +503,96 @@
       candidates.sort((a, b) => this.probability(b.p).p - this.probability(a.p).p || b.p.val.avg - a.p.val.avg);
       for (const c of candidates) {
         const reason = this.canOpen(c.p.sym);
-        if (reason) { this.log(`Señal ${c.p.sym} · ${SETUPS[c.p.sid].name} ignorada: ${reason}.`, 'warn'); continue; }
+        if (reason) { this.log(`Señal ${c.p.sym} · ${setupName(c.p.sid)} ignorada: ${reason}.`, 'warn'); continue; }
         this.open(c);
       }
       this.save();
     }
 
+    // «Criterio Claude»: busca en el historial de 1 h de cada moneda los momentos parecidos
+    // al actual (misma tendencia y RSI ±7) y simula comprar en ellos con varias combinaciones
+    // de objetivo y stop. Abre la mejor si acierta >= 75 %, gana de media y tiene >= 30 casos.
+    async regimeScan() {
+      const s = this.state;
+      const hour = Math.floor(Date.now() / 3600e3);
+      if (s.lastRegimeHour === hour) return;
+      s.lastRegimeHour = hour;
+      const cost = 2 * (CONFIG.feePct + CONFIG.slipPct);
+      const found = [];
+      for (const { sym } of COINS) {
+        const key = pkey(sym, 'criterio');
+        if (s.patterns[key] && s.patterns[key].status === 'no-funciona') continue;
+        if (s.open.some((t) => t.sym === sym)) continue;
+        let k;
+        try { k = closedOnly(await klinesPaged(sym + CONFIG.quote, '1h', CONFIG.hourlyPages)); } catch (e) { continue; }
+        if (k.length < 800) continue;
+        const x = indicators(k), n = k.length - 1;
+        const reg = (i) => [x.ema50[i] > x.ema200[i], x.c[i] > x.ema200[i], x.rsi[i]];
+        const now = reg(n);
+        const idx = [];
+        for (let i = 210; i < n - CONFIG.maxHoldH; i++) {
+          const r = reg(i);
+          if (r[0] === now[0] && r[1] === now[1] && Math.abs(r[2] - now[2]) <= 7) idx.push(i);
+        }
+        let best = null;
+        for (const tp of [0.5, 0.8, 1.2, 1.8]) for (const sl of [1.5, 2.5, 3.5]) {
+          const tr = [];
+          let last = -1;
+          for (const i of idx) {
+            if (i <= last) continue;
+            const e = k[i].c, a = x.atr[i], T = e + tp * a, S = e - sl * a;
+            let ex = null, j = i + 1;
+            for (; j <= i + CONFIG.maxHoldH; j++) { if (k[j].l <= S) { ex = S; break; } if (k[j].h >= T) { ex = T; break; } }
+            if (ex === null) { j = i + CONFIG.maxHoldH; ex = k[j].c; }
+            tr.push(ex / e - 1 - cost);
+            last = i + 6;
+          }
+          const st = stats(tr);
+          if (st.n >= CONFIG.regimeMinN && st.avg > 0 && st.win >= CONFIG.minWin && (!best || st.win > best.win || (st.win === best.win && st.avg > best.avg))) best = { tp, sl, ...st };
+        }
+        if (best) found.push({ sym, best, atr: x.atr[n], rsi: now[2], up: now[0] });
+      }
+      found.sort((a, b) => b.best.win - a.best.win || b.best.avg - a.best.avg);
+      if (!found.length) { this.log('Criterio Claude: ninguna moneda pasa los filtros en esta hora.'); return; }
+      for (const f of found) {
+        const key = pkey(f.sym, 'criterio');
+        const p = s.patterns[key] || { sym: f.sym, sid: 'criterio', verdict: 'criterio', status: 'aprendiendo', live: { n: 0, w: 0, sum: 0, recent: [] } };
+        Object.assign(p, { tp: f.best.tp, sl: f.best.sl, bt: { n: f.best.n, w: f.best.w, avg: f.best.avg }, tested: Date.now() });
+        s.patterns[key] = p;
+        const reason = this.canOpen(f.sym);
+        if (reason) { this.log(`Criterio Claude ${f.sym} (${Math.round(f.best.win * 100)} %) no se abre: ${reason}.`, 'warn'); continue; }
+        let price;
+        try { price = (await getJSON(`/api/v3/ticker/price?symbol=${f.sym}${CONFIG.quote}`)).price * 1; } catch (e) { continue; }
+        s.prices[f.sym] = price;
+        this.open({ p, atr: f.atr, price, prob: { p: f.best.win, low: f.best.low } });
+        this.log(`Motivo: en ${f.best.n} momentos parecidos (tendencia ${f.up ? 'alcista' : 'bajista'}, RSI ~${Math.round(f.rsi)}) ganó el ${Math.round(f.best.win * 100)} % con ${pct(f.best.avg, 2)} de media.`, 'trade');
+      }
+    }
+
     canOpen(sym) {
-      if (this.tradesToday() >= CONFIG.maxTradesPerDay) return 'ya se hicieron las 3 operaciones de hoy';
-      if (this.state.open.length >= CONFIG.maxOpen) return 'hay 3 posiciones abiertas';
+      if (this.tradesToday() >= CONFIG.maxTradesPerDay) return `ya se hicieron las ${CONFIG.maxTradesPerDay} operaciones de hoy`;
+      if (this.state.open.length >= CONFIG.maxOpen) return `hay ${CONFIG.maxOpen} posiciones abiertas`;
+      const used = this.state.open.reduce((a, t) => a + t.notional, 0);
+      if (used >= this.state.capital * CONFIG.maxExposure - 50) return 'no queda capital libre';
       if (this.state.open.some((t) => t.sym === sym)) return `ya hay una posición abierta en ${sym}`;
       return null;
     }
 
-    open({ p, atr: a, price }) {
+    open({ p, atr: a, price, prob: fixedProb }) {
       const s = this.state;
       const entry = price * (1 + CONFIG.slipPct);
       const tpP = entry + p.tp * a, slP = entry - p.sl * a;
       const riskFrac = (entry - slP) / entry;
-      const notional = Math.min(s.capital * CONFIG.riskPct / riskFrac, s.capital * CONFIG.maxPosPct);
-      const prob = this.probability(p);
+      const free = s.capital * CONFIG.maxExposure - s.open.reduce((acc, o) => acc + o.notional, 0);
+      const notional = Math.min(s.capital * CONFIG.riskPct / riskFrac, s.capital * CONFIG.maxPosPct, free);
+      const prob = fixedProb || this.probability(p);
       const t = {
         id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
         sym: p.sym, sid: p.sid, entry, tpP, slP, notional, entryT: Date.now(), checkedT: Date.now(),
         prob: prob.p, probLow: prob.low, status: p.status,
       };
       s.open.push(t);
-      this.log(`COMPRA simulada ${p.sym} a ${fmtPrice(entry)} · ${SETUPS[p.sid].name} · objetivo ${fmtPrice(tpP)}, stop ${fmtPrice(slP)} · prob. estimada ${Math.round(prob.p * 100)} % · tamaño ${notional.toFixed(0)} USDT`, 'trade');
+      this.log(`COMPRA simulada ${p.sym} a ${fmtPrice(entry)} · ${setupName(p.sid)} · objetivo ${fmtPrice(tpP)}, stop ${fmtPrice(slP)} · prob. estimada ${Math.round(prob.p * 100)} % · tamaño ${notional.toFixed(0)} USDT`, 'trade');
     }
 
     async updateOpen() {
@@ -567,7 +632,7 @@
       const L = p.live;
       L.n++; if (pnlPct > 0) L.w++; L.sum += pnlPct;
       L.recent = (L.recent || []).concat(pnlPct).slice(-20);
-      const name = `${p.sym} · ${SETUPS[p.sid].name}`;
+      const name = `${p.sym} · ${setupName(p.sid)}`;
       const wr = L.w / L.n, avg = L.sum / L.n;
       const before = p.status;
       if (L.n >= CONFIG.learnMinTrades) {
@@ -619,6 +684,7 @@
         if (Date.now() - this.state.lastResearch > CONFIG.researchEveryH * 3600e3) await this.research(progress);
         await this.updateOpen();
         await this.scan();
+        await this.regimeScan();
       } catch (e) {
         this.log(`Error: ${e.message}`, 'bad');
       } finally {

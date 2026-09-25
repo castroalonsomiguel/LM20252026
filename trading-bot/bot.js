@@ -26,7 +26,7 @@ printed = bot.state.log.length;
 async function loop() {
   await bot.tick((f, msg) => process.stdout.write(`\r${Math.round(f * 100)} % ${msg}                    `));
   const s = bot.state;
-  console.log(`\nCapital ${s.capital.toFixed(2)} USDT · abiertas ${s.open.length} · hoy ${bot.tradesToday()}/${E.CONFIG.maxTradesPerDay}`);
+  console.log(`\nCapital ${s.capital.toFixed(2)} USDT · abiertas ${s.open.length} · hoy ${bot.tradesToday()}`);
 }
 
 console.log('Centinela en marcha (simulación, sin dinero real). Ctrl+C para parar.');

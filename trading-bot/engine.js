@@ -600,14 +600,19 @@
       const s = this.state;
       const now = Date.now();
       for (const t of [...s.open]) {
+        // Velas de 1 min para no confundir un máximo anterior a la compra con el objetivo.
+        // Si el bot estuvo parado más de 16 h, se usan velas de 5 min para cubrir el hueco.
+        const from = Math.max(t.entryT, t.checkedT - 60e3);
+        const step = now - from > 990 * 60e3 ? 5 * 60e3 : 60e3;
         let k;
-        try { k = await klinesSince(t.sym + CONFIG.quote, '5m', Math.max(t.entryT, t.checkedT - 5 * 60e3) - 5 * 60e3); } catch (e) { continue; }
+        try { k = await klinesSince(t.sym + CONFIG.quote, step === 60e3 ? '1m' : '5m', Math.floor(from / step) * step); } catch (e) { continue; }
         const deadline = t.entryT + CONFIG.maxHoldH * 3600e3;
         let exit = null, reason = null, exitT = null;
         for (const c of k) {
-          if (c.t + 5 * 60e3 <= t.entryT) continue;
-          if (c.l <= t.slP) { exit = t.slP; reason = 'stop'; exitT = c.t; break; }
-          if (c.h >= t.tpP) { exit = t.tpP; reason = 'objetivo'; exitT = c.t; break; }
+          if (c.t + step <= t.entryT) continue;
+          const at = Math.max(c.t, t.entryT);
+          if (c.l <= t.slP) { exit = t.slP; reason = 'stop'; exitT = at; break; }
+          if (c.h >= t.tpP) { exit = t.tpP; reason = 'objetivo'; exitT = at; break; }
           if (c.ct >= deadline && c.ct < now) { exit = c.c; reason = 'tiempo (48 h)'; exitT = c.ct; break; }
         }
         if (k.length) { s.prices[t.sym] = k[k.length - 1].c; t.checkedT = now; }

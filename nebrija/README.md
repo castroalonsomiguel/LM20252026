@@ -1,26 +1,35 @@
 # NEBRIJA
 
-Juego retro 2D (pixel art) que funciona en local. Abre `index.html` con doble clic en cualquier navegador; no hace falta instalar nada.
+Juego retro 2D (pixel art) que funciona en local. Abre `index.html` con doble clic en cualquier navegador; no hace falta instalar nada. La partida se guarda sola en el navegador.
 
 ## Controles
 | Tecla | Acción |
 |---|---|
-| Flechas | Moverse (en el menú: elegir personaje) |
-| Enter | Empezar a jugar con el personaje elegido |
-| Espacio | Saltar (pulsa otra vez en menos de 1 s para hacer doble salto) |
-| E | Entrar en la Nebrija o en el Bar Labrador, salir, hablar o pedir |
-| Q | Beberte lo que lleves en la mano (quinto o copa) |
+| A / D (o flechas) | Moverse |
+| W o Espacio | Saltar (pulsa otra vez en menos de 1 s para hacer doble salto) |
+| S | Bajar de una plataforma |
+| E | Entrar, hablar, comprar o usar |
+| F | Golpe (puño o espada) |
+| R | Dash (habilidad de la tienda) |
+| C | Escudo (habilidad de la tienda) |
+| X | Lanzar botellín (habilidad de la tienda) |
+| Q | Beberte lo que lleves en la mano |
 | L | Ver las misiones |
-| Esc | Volver al menú para cambiar de personaje |
+| Esc | Menú para cambiar de personaje |
 | M | Activar o desactivar el sonido |
 
 ## Personajes
-Richi, Castro, Pinguino, Santos, Asier, Lucas, Pinilla, David, Erik Elvis y Manucho.
+| Personaje | Ventaja |
+|---|---|
+| Richi y Castro | Fuerza +50 % |
+| Santos | Velocidad +30 % |
+| Pingüino | +1 vida |
+| Erik Elvis | Golpe (F) x2 |
 
-## Qué hay en el juego
-- **Mapa:** Calle Nebrija, El Parque, Zona de Obras y Zona de Fiesta, con obstáculos (vallas, conos, contenedores, palomas y un patinete) y monedas escondidas.
-- **Misiones:** tus amigos están repartidos por el mapa. Los que tienen una «!» encima te dan una misión, y al completarla te pagan en monedas.
-- **Bar Labrador:** el quinto cuesta 1,5 monedas y la copa 5.
-- **Borrachera:** con más de 3 quintos, o con una sola copa, te emborrachas. Si entras así en la Nebrija, te llevan al despacho de José Carlos, el director.
-- **Dentro de la Nebrija:** un pasillo que lleva al aula de Carmelo y a la sala de profesores, donde están Cárceles y Cletus.
-- **Jefes finales:** El Gorila, en la discoteca La Pixelera, y El Revisor, en el metro. El metro no se abre hasta que derrotas al Gorila.
+## Progreso
+- **Misiones:** tus amigos y la gente de cada parada te dan misiones. Al completarlas ganas monedas y experiencia (XP).
+- **Niveles:** al subir de nivel haces un 10 % más de daño, y cada 2 niveles ganas una vida. Los jefes dan mucha más XP que las misiones.
+- **Tienda de Paco:** está en la plaza, a la izquierda del inicio; también hay una máquina en el metro. Vende zapatillas rápidas, doble salto propulsado, triple salto, espada, espada de oro, corazones, imán de monedas, dash, escudo, botellín y pincho de tortilla.
+- **Bar Labrador:** el quinto cuesta 1,5 monedas y la copa 5. Con más de 3 quintos, o con una copa, te emborrachas. Si entras así en la Nebrija, acabas en el despacho de José Carlos, el director.
+- **Metro:** hay que derrotar primero al Gorila (La Pixelera) para abrirlo, y después al Revisor para que funcione el plano. Desde el plano se viaja a 8 paradas: Moratalaz, Coslada, Alcalá de Henares, Tetuán, Velilla de San Antonio, Méndez Álvaro, La Elipa y Hortaleza.
+- **Paradas:** cada una tiene dos misiones y un jefe final, cada vez más difícil. La siguiente parada no se desbloquea hasta que derrotas al jefe de la anterior. El último jefe es Mega Carmelo.

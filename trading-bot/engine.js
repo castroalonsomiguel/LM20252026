@@ -26,10 +26,12 @@
     riskPct: 0.01,            // se arriesga el 1 % del capital hasta el stop
     maxPosPct: 0.30,          // ninguna posición supera el 30 % del capital
     maxTradesPerDay: Infinity, // sin límite diario: entra en todo lo que pase los filtros
-    maxOpen: Infinity,         // sin límite de posiciones (una por moneda y sin superar el capital)
+    maxOpen: 3,                // como mucho 3 posiciones abiertas a la vez
     maxExposure: 1.0,          // la suma de posiciones abiertas no supera el 100 % del capital
-    regimeMinN: 30,
-    maxLossPct: 0.25,          // límite de pérdida: 25 % del capital inicial            // casos parecidos mínimos para el «Criterio Claude»
+    regimeMinN: 30,            // casos parecidos mínimos para el «Criterio Claude»
+    maxLossPct: 0.25,          // límite de pérdida: 25 % del capital inicial
+    minEdge: 0.0005,           // ganancia media histórica mínima por operación (+0,05 %)
+    maxSlTp: 3,                // el stop no puede ser más de 3 veces el objetivo
     minWin: 0.75,             // probabilidad mínima de ganar exigida
     feePct: 0.001,            // comisión por lado (Binance spot)
     slipPct: 0.0005,          // deslizamiento estimado por lado
@@ -355,14 +357,15 @@
     for (const [sid, setup] of Object.entries(SETUPS)) {
       let best = null;
       for (const tp of CONFIG.tpGrid) for (const sl of CONFIG.slGrid) {
+        if (sl > tp * CONFIG.maxSlTp) continue;
         const st = stats(simulate(k, x, setup, tp, sl, 0, split));
-        if (st.n >= CONFIG.minTrain && st.win >= CONFIG.minWin && st.avg > 0 && (!best || st.sum > best.train.sum)) {
+        if (st.n >= CONFIG.minTrain && st.win >= CONFIG.minWin && st.avg >= CONFIG.minEdge && (!best || st.sum > best.train.sum)) {
           best = { tp, sl, train: st };
         }
       }
       if (!best) { out.push({ sym, sid, verdict: 'sin-candidato' }); continue; }
       const val = stats(simulate(k, x, setup, best.tp, best.sl, split, k.length));
-      const passed = val.n >= CONFIG.minVal && val.win >= CONFIG.minWin && val.avg > 0;
+      const passed = val.n >= CONFIG.minVal && val.win >= CONFIG.minWin && val.avg >= CONFIG.minEdge;
       out.push({ sym, sid, tp: best.tp, sl: best.sl, train: best.train, val, verdict: passed ? 'valido' : 'falla-validacion' });
     }
     return out;
@@ -537,6 +540,7 @@
         }
         let best = null;
         for (const tp of [0.5, 0.8, 1.2, 1.8]) for (const sl of [1.5, 2.5, 3.5]) {
+          if (sl > tp * CONFIG.maxSlTp) continue;
           const tr = [];
           let last = -1;
           for (const i of idx) {
@@ -549,7 +553,7 @@
             last = i + 6;
           }
           const st = stats(tr);
-          if (st.n >= CONFIG.regimeMinN && st.avg > 0 && st.win >= CONFIG.minWin && (!best || st.win > best.win || (st.win === best.win && st.avg > best.avg))) best = { tp, sl, ...st };
+          if (st.n >= CONFIG.regimeMinN && st.avg >= CONFIG.minEdge && st.win >= CONFIG.minWin && (!best || st.win > best.win || (st.win === best.win && st.avg > best.avg))) best = { tp, sl, ...st };
         }
         if (best) found.push({ sym, best, atr: x.atr[n], rsi: now[2], up: now[0] });
       }

@@ -1,0 +1,6 @@
+06:58:40.919 DHCPREQUEST for 192.168.50.100 from 08:00:27:aa:bb:cc via enp0s3: unknown lease 192.168.50.100.
+06:59:00.534 DHCPREQUEST for 192.168.50.100 from 08:00:27:aa:bb:cc via enp0s3: unknown lease 192.168.50.100.
+06:59:08.671 DHCPDISCOVER from 08:00:27:aa:bb:cc via enp0s3
+06:59:09.673 DHCPOFFER on 192.168.50.200 to 08:00:27:aa:bb:cc (vm) via enp0s3
+06:59:09.677 DHCPREQUEST for 192.168.50.200 (192.168.50.3) from 08:00:27:aa:bb:cc (vm) via enp0s3
+06:59:09.679 DHCPACK on 192.168.50.200 to 08:00:27:aa:bb:cc (vm) via enp0s3

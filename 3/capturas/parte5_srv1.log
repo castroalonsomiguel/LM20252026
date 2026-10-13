@@ -1,0 +1,18 @@
+06:59:27.084 *** SRV1 y SRV2 APAGADOS: el cliente libera y olvida su concesion ***
+06:59:28.219 *** ARRANCA SOLO SRV2 ***
+06:59:29.239 *** CLIENTE SOLICITA CONFIGURACION NUEVA ***
+06:59:32.766 *** ARRANCA SRV1 ***
+06:59:32.787 Internet Systems Consortium DHCP Server 4.4.3-P1
+06:59:32.789 Copyright 2004-2022 Internet Systems Consortium.
+06:59:32.791 All rights reserved.
+06:59:32.794 For info, please visit https://www.isc.org/software/dhcp/
+06:59:32.795 Config file: /home/user/LM20252026/3/lab/dhcpd-srv1.conf
+06:59:32.798 Database file: /home/user/LM20252026/3/lab/run/srv1.leases
+06:59:32.800 PID file: /home/user/LM20252026/3/lab/run/srv1.pid
+06:59:32.802 Wrote 1 leases to leases file.
+06:59:32.823 Listening on LPF/enp0s3/08:00:27:00:00:02/192.168.50.0/24
+06:59:32.825 Sending on   LPF/enp0s3/08:00:27:00:00:02/192.168.50.0/24
+06:59:32.827 Sending on   Socket/fallback/fallback-net
+06:59:32.829 Server starting service.
+07:03:38.363 *** REINICIO DEL CLIENTE CONSERVANDO SU CONCESION (INIT-REBOOT) ***
+07:03:39.432 DHCPREQUEST for 192.168.50.200 from 08:00:27:aa:bb:cc via enp0s3: unknown lease 192.168.50.200.

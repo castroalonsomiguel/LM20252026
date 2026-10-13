@@ -1,0 +1,25 @@
+ronda 1  +    0.0 ms  0.0.0.0         DISCOVER 
+ronda 1  +    0.4 ms  192.168.50.2    OFFER 192.168.50.2
+ronda 1  +    0.6 ms  0.0.0.0         REQUEST 192.168.50.2
+ronda 1  +    1.8 ms  192.168.50.2    ACK 192.168.50.2
+ronda 1  + 1002.0 ms  192.168.50.3    OFFER 192.168.50.3
+ronda 2  +    0.0 ms  0.0.0.0         DISCOVER 
+ronda 2  +    0.3 ms  192.168.50.2    OFFER 192.168.50.2
+ronda 2  +    0.4 ms  0.0.0.0         REQUEST 192.168.50.2
+ronda 2  +    3.9 ms  192.168.50.2    ACK 192.168.50.2
+ronda 2  + 1001.9 ms  192.168.50.3    OFFER 192.168.50.3
+ronda 3  +    0.0 ms  0.0.0.0         DISCOVER 
+ronda 3  +    0.3 ms  192.168.50.2    OFFER 192.168.50.2
+ronda 3  +    0.4 ms  0.0.0.0         REQUEST 192.168.50.2
+ronda 3  +    2.3 ms  192.168.50.2    ACK 192.168.50.2
+ronda 3  + 1001.8 ms  192.168.50.3    OFFER 192.168.50.3
+ronda 4  +    0.0 ms  0.0.0.0         DISCOVER 
+ronda 4  +    0.3 ms  192.168.50.2    OFFER 192.168.50.2
+ronda 4  +    0.4 ms  0.0.0.0         REQUEST 192.168.50.2
+ronda 4  +    2.3 ms  192.168.50.2    ACK 192.168.50.2
+ronda 4  + 1001.7 ms  192.168.50.3    OFFER 192.168.50.3
+ronda 5  +    0.0 ms  0.0.0.0         DISCOVER 
+ronda 5  +    0.4 ms  192.168.50.2    OFFER 192.168.50.2
+ronda 5  +    0.5 ms  0.0.0.0         REQUEST 192.168.50.2
+ronda 5  +    2.3 ms  192.168.50.2    ACK 192.168.50.2
+ronda 5  + 1001.8 ms  192.168.50.3    OFFER 192.168.50.3

@@ -1,0 +1,6 @@
+06:52:04.679 DHCPDISCOVER from 08:00:27:aa:bb:cc via enp0s3
+06:52:04.681 DHCPOFFER on 192.168.50.100 to 08:00:27:aa:bb:cc (vm) via enp0s3
+06:52:04.683 DHCPREQUEST for 192.168.50.100 (192.168.50.2) from 08:00:27:aa:bb:cc (vm) via enp0s3
+06:52:04.685 DHCPACK on 192.168.50.100 to 08:00:27:aa:bb:cc (vm) via enp0s3
+06:54:07.134 DHCPREQUEST for 192.168.50.100 from 08:00:27:aa:bb:cc (vm) via enp0s3
+06:54:07.137 DHCPACK on 192.168.50.100 to 08:00:27:aa:bb:cc (vm) via enp0s3

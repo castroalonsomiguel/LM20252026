@@ -12,6 +12,9 @@ Comprobar experimentalmente:
 - Qué ocurre si el servidor que concedió la dirección deja de estar disponible.
 - Cómo observar todo el proceso con `journalctl`, `tcpdump` y Wireshark.
 
+> 📷 **Capturas reales** (pcap, logs y pantallas de Wireshark) de toda la práctica ejecutada en
+> Ubuntu 24.04: ver [RESULTADOS_LABORATORIO.md](RESULTADOS_LABORATORIO.md).
+
 ---
 
 ## 0. Entorno de laboratorio

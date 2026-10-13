@@ -1,0 +1,18 @@
+06:52:04.640 Internet Systems Consortium DHCP Client 4.4.3-P1
+06:52:04.643 Copyright 2004-2022 Internet Systems Consortium.
+06:52:04.646 All rights reserved.
+06:52:04.648 For info, please visit https://www.isc.org/software/dhcp/
+06:52:04.650 
+06:52:04.679 Listening on LPF/enp0s3/08:00:27:aa:bb:cc
+06:52:04.682 Sending on   LPF/enp0s3/08:00:27:aa:bb:cc
+06:52:04.684 Sending on   Socket/fallback
+06:52:04.686 xid: warning: no netdev with useable HWADDR found for seed's uniqueness enforcement
+06:52:04.688 xid: rand init seed (0x6ab2d414) built using gethostid
+06:52:04.690 DHCPDISCOVER on enp0s3 to 255.255.255.255 port 67 interval 3 (xid=0x33ca8461)
+06:52:04.692 DHCPOFFER of 192.168.50.100 from 192.168.50.2
+06:52:04.695 DHCPREQUEST for 192.168.50.100 on enp0s3 to 255.255.255.255 port 67 (xid=0x6184ca33)
+06:52:04.697 DHCPACK of 192.168.50.100 from 192.168.50.2 (xid=0x33ca8461)
+06:52:04.712 bound to 192.168.50.100 -- renewal in 123 seconds.
+06:54:07.134 DHCPREQUEST for 192.168.50.100 on enp0s3 to 192.168.50.2 port 67 (xid=0x6184ca33)
+06:54:07.137 DHCPACK of 192.168.50.100 from 192.168.50.2 (xid=0x33ca8461)
+06:54:07.169 bound to 192.168.50.100 -- renewal in 129 seconds.

@@ -1,0 +1,30 @@
+06:59:27.084 *** SRV1 y SRV2 APAGADOS: el cliente libera y olvida su concesion ***
+06:59:28.219 *** ARRANCA SOLO SRV2 ***
+06:59:28.243 Internet Systems Consortium DHCP Server 4.4.3-P1
+06:59:28.245 Copyright 2004-2022 Internet Systems Consortium.
+06:59:28.248 All rights reserved.
+06:59:28.250 For info, please visit https://www.isc.org/software/dhcp/
+06:59:28.253 Config file: /home/user/LM20252026/3/lab/dhcpd-srv2.conf
+06:59:28.255 Database file: /home/user/LM20252026/3/lab/run/srv2.leases
+06:59:28.258 PID file: /home/user/LM20252026/3/lab/run/srv2.pid
+06:59:28.260 Wrote 1 leases to leases file.
+06:59:28.263 Listening on LPF/enp0s3/08:00:27:00:00:03/192.168.50.0/24
+06:59:28.266 Sending on   LPF/enp0s3/08:00:27:00:00:03/192.168.50.0/24
+06:59:28.269 Sending on   Socket/fallback/fallback-net
+06:59:28.272 Server starting service.
+06:59:29.239 *** CLIENTE SOLICITA CONFIGURACION NUEVA ***
+06:59:29.291 reuse_lease: lease age 20 (secs) under 25% threshold, reply with unaltered, existing lease for 192.168.50.200
+06:59:29.294 DHCPDISCOVER from 08:00:27:aa:bb:cc (vm) via enp0s3
+06:59:29.297 DHCPOFFER on 192.168.50.200 to 08:00:27:aa:bb:cc (vm) via enp0s3
+06:59:29.299 reuse_lease: lease age 20 (secs) under 25% threshold, reply with unaltered, existing lease for 192.168.50.200
+06:59:29.302 DHCPREQUEST for 192.168.50.200 (192.168.50.3) from 08:00:27:aa:bb:cc (vm) via enp0s3
+06:59:29.304 DHCPACK on 192.168.50.200 to 08:00:27:aa:bb:cc (vm) via enp0s3
+06:59:32.766 *** ARRANCA SRV1 ***
+07:01:37.622 DHCPREQUEST for 192.168.50.200 from 08:00:27:aa:bb:cc (vm) via enp0s3
+07:01:37.625 DHCPACK on 192.168.50.200 to 08:00:27:aa:bb:cc (vm) via enp0s3
+07:03:34.467 DHCPREQUEST for 192.168.50.200 from 08:00:27:aa:bb:cc (vm) via enp0s3
+07:03:34.470 DHCPACK on 192.168.50.200 to 08:00:27:aa:bb:cc (vm) via enp0s3
+07:03:38.363 *** REINICIO DEL CLIENTE CONSERVANDO SU CONCESION (INIT-REBOOT) ***
+07:03:39.433 reuse_lease: lease age 5 (secs) under 25% threshold, reply with unaltered, existing lease for 192.168.50.200
+07:03:39.435 DHCPREQUEST for 192.168.50.200 from 08:00:27:aa:bb:cc (vm) via enp0s3
+07:03:39.438 DHCPACK on 192.168.50.200 to 08:00:27:aa:bb:cc (vm) via enp0s3

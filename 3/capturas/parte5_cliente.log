@@ -1,0 +1,52 @@
+06:59:27.084 *** SRV1 y SRV2 APAGADOS: el cliente libera y olvida su concesion ***
+06:59:27.103 Killed old client process
+06:59:28.105 Internet Systems Consortium DHCP Client 4.4.3-P1
+06:59:28.108 Copyright 2004-2022 Internet Systems Consortium.
+06:59:28.111 All rights reserved.
+06:59:28.114 For info, please visit https://www.isc.org/software/dhcp/
+06:59:28.117 
+06:59:28.120 Listening on LPF/enp0s3/08:00:27:aa:bb:cc
+06:59:28.123 Sending on   LPF/enp0s3/08:00:27:aa:bb:cc
+06:59:28.126 Sending on   Socket/fallback
+06:59:28.128 xid: warning: no netdev with useable HWADDR found for seed's uniqueness enforcement
+06:59:28.130 xid: rand init seed (0x6ab2d7d0) built using gethostid
+06:59:28.132 DHCPRELEASE of 192.168.50.200 on enp0s3 to 192.168.50.3 port 67 (xid=0x2f65dd5f)
+06:59:28 
+06:59:28.219 *** ARRANCA SOLO SRV2 ***
+06:59:29.239 *** CLIENTE SOLICITA CONFIGURACION NUEVA ***
+06:59:29.261 Internet Systems Consortium DHCP Client 4.4.3-P1
+06:59:29.264 Copyright 2004-2022 Internet Systems Consortium.
+06:59:29.267 All rights reserved.
+06:59:29.269 For info, please visit https://www.isc.org/software/dhcp/
+06:59:29.271 
+06:59:29.291 Listening on LPF/enp0s3/08:00:27:aa:bb:cc
+06:59:29.294 Sending on   LPF/enp0s3/08:00:27:aa:bb:cc
+06:59:29.297 Sending on   Socket/fallback
+06:59:29.299 xid: warning: no netdev with useable HWADDR found for seed's uniqueness enforcement
+06:59:29.302 xid: rand init seed (0x6ab2d7d1) built using gethostid
+06:59:29.304 DHCPDISCOVER on enp0s3 to 255.255.255.255 port 67 interval 3 (xid=0x9760b91d)
+06:59:29.306 DHCPOFFER of 192.168.50.200 from 192.168.50.3
+06:59:29.309 DHCPREQUEST for 192.168.50.200 on enp0s3 to 255.255.255.255 port 67 (xid=0x1db96097)
+06:59:29.311 DHCPACK of 192.168.50.200 from 192.168.50.3 (xid=0x9760b91d)
+06:59:29.324 bound to 192.168.50.200 -- renewal in 128 seconds.
+06:59:32.766 *** ARRANCA SRV1 ***
+07:01:37.622 DHCPREQUEST for 192.168.50.200 on enp0s3 to 192.168.50.3 port 67 (xid=0x1db96097)
+07:01:37.624 DHCPACK of 192.168.50.200 from 192.168.50.3 (xid=0x9760b91d)
+07:01:37.657 bound to 192.168.50.200 -- renewal in 117 seconds.
+07:03:34.466 DHCPREQUEST for 192.168.50.200 on enp0s3 to 192.168.50.3 port 67 (xid=0x1db96097)
+07:03:34.469 DHCPACK of 192.168.50.200 from 192.168.50.3 (xid=0x9760b91d)
+07:03:34.503 bound to 192.168.50.200 -- renewal in 130 seconds.
+07:03:38.363 *** REINICIO DEL CLIENTE CONSERVANDO SU CONCESION (INIT-REBOOT) ***
+07:03:39.400 Internet Systems Consortium DHCP Client 4.4.3-P1
+07:03:39.403 Copyright 2004-2022 Internet Systems Consortium.
+07:03:39.405 All rights reserved.
+07:03:39.407 For info, please visit https://www.isc.org/software/dhcp/
+07:03:39.409 
+07:03:39.431 Listening on LPF/enp0s3/08:00:27:aa:bb:cc
+07:03:39.433 Sending on   LPF/enp0s3/08:00:27:aa:bb:cc
+07:03:39.436 Sending on   Socket/fallback
+07:03:39.438 xid: warning: no netdev with useable HWADDR found for seed's uniqueness enforcement
+07:03:39.440 xid: rand init seed (0x6ab2d6cb) built using gethostid
+07:03:39.443 DHCPREQUEST for 192.168.50.200 on enp0s3 to 255.255.255.255 port 67 (xid=0x6ab80431)
+07:03:39.445 DHCPACK of 192.168.50.200 from 192.168.50.3 (xid=0x3104b86a)
+07:03:39.468 bound to 192.168.50.200 -- renewal in 138 seconds.

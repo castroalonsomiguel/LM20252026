@@ -1,0 +1,12 @@
+06:52:05.166 Internet Systems Consortium DHCP Server 4.4.3-P1
+06:52:05.169 Copyright 2004-2022 Internet Systems Consortium.
+06:52:05.172 All rights reserved.
+06:52:05.175 For info, please visit https://www.isc.org/software/dhcp/
+06:52:05.179 Config file: /home/user/LM20252026/3/lab/dhcpd-srv2.conf
+06:52:05.182 Database file: /home/user/LM20252026/3/lab/run/srv2.leases
+06:52:05.185 PID file: /home/user/LM20252026/3/lab/run/srv2.pid
+06:52:05.187 Wrote 0 leases to leases file.
+06:52:05.190 Listening on LPF/enp0s3/08:00:27:00:00:03/192.168.50.0/24
+06:52:05.193 Sending on   LPF/enp0s3/08:00:27:00:00:03/192.168.50.0/24
+06:52:05.196 Sending on   Socket/fallback/fallback-net
+06:52:05.199 Server starting service.

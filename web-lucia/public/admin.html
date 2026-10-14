@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Panel — Lucía Castro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="stylesheet" href="assets/admin.css">
+</head>
+<body class="admin">
+  <header class="admin-bar">
+    <a class="brand" href="index.html">Lucía Castro <small>Panel</small></a>
+    <nav class="admin-tabs" hidden>
+      <button type="button" data-tab="mensajes" class="is-active">Mensajes <span class="badge" id="unread" hidden></span></button>
+      <button type="button" data-tab="obras">Obras</button>
+      <button type="button" id="logout" class="link">Salir</button>
+    </nav>
+  </header>
+
+  <main class="admin-main">
+    <!-- Acceso -->
+    <section id="login" class="panel login">
+      <h1 class="h2">Acceso al panel</h1>
+      <p class="muted">Introduce la clave de administración (ADMIN_TOKEN del servidor).</p>
+      <form id="login-form" class="stack">
+        <div class="field">
+          <label for="token">Clave</label>
+          <input id="token" type="password" autocomplete="current-password" required>
+        </div>
+        <button class="btn" type="submit">Entrar</button>
+        <p class="form-status" id="login-status" role="status"></p>
+      </form>
+    </section>
+
+    <!-- Mensajes -->
+    <section id="tab-mensajes" class="panel" hidden>
+      <div class="panel-head">
+        <h1 class="h2">Mensajes</h1>
+        <div class="filters" role="group" aria-label="Filtrar mensajes">
+          <button type="button" data-filtro="" class="is-active">Todos</button>
+          <button type="button" data-filtro="false">Sin leer</button>
+          <button type="button" data-filtro="true">Leídos</button>
+        </div>
+      </div>
+      <p class="form-status" id="mensajes-status" role="status"></p>
+      <div id="mensajes" class="msg-list"></div>
+    </section>
+
+    <!-- Obras -->
+    <section id="tab-obras" class="panel" hidden>
+      <div class="panel-head">
+        <h1 class="h2">Obras</h1>
+        <button type="button" class="btn" id="nueva-obra">Añadir obra</button>
+      </div>
+
+      <form id="obra-form" class="obra-form" hidden>
+        <h2 class="h3" id="obra-form-title">Nueva obra</h2>
+        <input type="hidden" id="o-id">
+        <div class="grid2">
+          <div class="field"><label for="o-titulo">Título</label><input id="o-titulo" required maxlength="160"></div>
+          <div class="field"><label for="o-tecnica">Técnica</label><input id="o-tecnica" maxlength="120" placeholder="Óleo sobre lienzo"></div>
+          <div class="field"><label for="o-medidas">Medidas</label><input id="o-medidas" maxlength="80" placeholder="60 × 80 cm"></div>
+          <div class="field"><label for="o-anio">Año</label><input id="o-anio" type="number" min="1900" max="2100"></div>
+          <div class="field field--full"><label for="o-descripcion">Descripción</label><textarea id="o-descripcion" rows="3" maxlength="2000"></textarea></div>
+          <div class="field">
+            <label for="o-imagen">Imagen (JPG, PNG o WEBP, máx. 8 MB)</label>
+            <input id="o-imagen" type="file" accept="image/jpeg,image/png,image/webp,image/avif">
+          </div>
+          <div class="field"><label for="o-orden">Orden en la galería</label><input id="o-orden" type="number" value="0"></div>
+          <div class="field field--full preview-wrap"><img id="o-preview" alt="" hidden></div>
+          <div class="toggles field--full">
+            <label class="check" for="o-publicada"><input id="o-publicada" type="checkbox" checked><span>Visible en la web</span></label>
+            <label class="check" for="o-disponible"><input id="o-disponible" type="checkbox" checked><span>Disponible (no vendida)</span></label>
+            <label class="check" for="o-destacada"><input id="o-destacada" type="checkbox"><span>Obra destacada (página Pintura)</span></label>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn" type="submit">Guardar</button>
+          <button class="btn btn--ghost" type="button" id="cancelar-obra">Cancelar</button>
+          <p class="form-status" id="obra-status" role="status"></p>
+        </div>
+      </form>
+
+      <p class="form-status" id="obras-status" role="status"></p>
+      <div id="obras" class="obra-list"></div>
+    </section>
+  </main>
+
+  <script src="assets/config.js"></script>
+  <script src="assets/admin.js"></script>
+</body>
+</html>

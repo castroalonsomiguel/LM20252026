@@ -55,7 +55,7 @@
     <section class="section section--alt">
       <div class="container">
         <div class="section-head reveal"><span class="eyebrow">Selección de obra</span><h2 class="h2">Algunos <em>cuadros</em>.</h2></div>
-        <div class="gallery">
+        <div class="gallery" data-obras>
           <div class="item reveal d0"><figure class="artwork ">
   <div class="artwork-canvas">
     <div class="abstract abstract--1"></div>
@@ -145,6 +145,49 @@
           <li><a href="#" data-instagram><small>Instagram</small><strong>@l.castro.arch</strong><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8h13M9 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></a></li>
         </ul>
       </div>
+      <form class="contact-form reveal" id="contact-form" novalidate>
+        <div class="form-head">
+          <span class="eyebrow">Escríbeme</span>
+          <p class="form-intro">Cuéntame tu idea y te responderé lo antes posible.</p>
+        </div>
+        <div class="field">
+          <label for="cf-nombre">Nombre</label>
+          <input id="cf-nombre" name="nombre" type="text" autocomplete="name" maxlength="120" required>
+        </div>
+        <div class="field">
+          <label for="cf-email">Correo electrónico</label>
+          <input id="cf-email" name="email" type="email" autocomplete="email" maxlength="200" required>
+        </div>
+        <div class="field">
+          <label for="cf-telefono">Teléfono <span class="opt">(opcional)</span></label>
+          <input id="cf-telefono" name="telefono" type="tel" autocomplete="tel" maxlength="40">
+        </div>
+        <div class="field">
+          <label for="cf-area">Tema</label>
+          <select id="cf-area" name="area">
+            <option value="arquitectura">Arquitectura</option>
+            <option value="pintura">Pintura / obra por encargo</option>
+            <option value="escenografia">Escenografía</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+        <div class="field field--full">
+          <label for="cf-mensaje">Mensaje</label>
+          <textarea id="cf-mensaje" name="mensaje" rows="5" minlength="10" maxlength="5000" required></textarea>
+        </div>
+        <div class="hp" aria-hidden="true">
+          <label for="cf-web">No rellenar</label>
+          <input id="cf-web" name="web" type="text" tabindex="-1" autocomplete="off">
+        </div>
+        <label class="check field--full" for="cf-privacidad">
+          <input id="cf-privacidad" name="privacidad" type="checkbox" required>
+          <span>Acepto que mis datos se usen únicamente para responder a mi consulta.</span>
+        </label>
+        <div class="form-actions field--full">
+          <button class="btn" type="submit">Enviar mensaje <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8h13M9 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></button>
+          <p class="form-status" role="status" aria-live="polite"></p>
+        </div>
+      </form>
       <div class="footer-bottom">
         <span>© <span data-year>2026</span> Lucía Castro</span>
         <span>Arquitectura · Pintura · Escenografía</span>

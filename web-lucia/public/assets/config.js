@@ -11,5 +11,11 @@ window.SITE_CONFIG = {
   email: "lcastroalonso5@gmail.com",
   phone: "+34601092363",
   phoneLabel: "601 092 363",
-  instagram: "l.castro.arch"
+  instagram: "l.castro.arch",
+
+  // Dirección del servidor (API + MongoDB). Vacío = el mismo dominio que la web,
+  // que es lo normal cuando la web se sirve con "npm start".
+  // Si la web se publica aparte (p. ej. GitHub Pages), pon aquí la URL del servidor:
+  // apiUrl: "https://lucia-castro-api.onrender.com"
+  apiUrl: ""
 };

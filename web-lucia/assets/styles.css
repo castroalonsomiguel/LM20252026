@@ -536,3 +536,5 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 400; line-height: 1.05; mar
 .pager small { font-size: 10px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--muted); }
 .pager strong { font-family: var(--serif); font-weight: 400; font-size: clamp(28px, 3.4vw, 44px); }
 @media (max-width: 520px) { .pager { grid-template-columns: 1fr; } .pager a + a { border-left: 0; border-top: 1px solid var(--line); text-align: left; } }
+
+[hidden] { display: none !important; }
